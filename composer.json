@@ -1,0 +1,8 @@
+{
+    "name": "bdstefan/gearman-workshop",
+    "description": "German Workshop",
+    "autoload": {
+        "psr-4": {"GearmanApp\\": "src/"}
+    },
+    "minimum-stability": "dev"
+}
