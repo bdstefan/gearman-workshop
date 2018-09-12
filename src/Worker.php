@@ -2,7 +2,7 @@
 
 namespace GearmanApp;
 
-class GearmanWorker
+class Worker
 {
 
 }
