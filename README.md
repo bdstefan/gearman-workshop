@@ -1,1 +1,8 @@
-This an example of how to use Gearman
+Gearman Workshop
+=====================================
+
+If you are running a Linux and gearman PHP ext is not installed:
+* LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php
+* LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/pkg-gearman
+* sudo apt-get update
+* sudo apt-get install php-gearman
