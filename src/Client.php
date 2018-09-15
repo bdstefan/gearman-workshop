@@ -2,7 +2,7 @@
 
 namespace GearmanApp;
 
-class Client
+class Client implements ServerQueue
 {
     use ServerTrait;
 
@@ -18,12 +18,14 @@ class Client
 
     public function publishBackground(string $queue, string $workload)
     {
+        $this->client->doBackground($queue, $workload);
+        $this->client->doLowBackground($queue, $workload);
         $this->client->doHighBackground($queue, $workload);
     }
 
     public function publish(string $queue, string $payload)
     {
-        $this->client->doHigh($queue, $payload);
-        //todo: implement job status and sync processing
+        echo $this->client->doHigh($queue, $payload);
     }
 }
+
