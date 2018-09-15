@@ -21,11 +21,19 @@ class Producer
 
     public function produceSyncJob()
     {
-        $this->client->publish(Client::SYNC_QUEUE, json_encode(["user" => "this is sync workload"]));
+        for ($i = 0; $i < 100; $i++) {
+            $this->client->publish(Client::SYNC_QUEUE, json_encode(["numbers" => $this->getValues(3)]));
+        }
+    }
+
+    private function getValues(int $length): array
+    {
+        $numbers = range(1, 10);
+        shuffle($numbers);
+        return array_slice($numbers, 0, $length);
     }
 }
 
 $producer = new Producer();
 $producer->produceAsyncJob();
 $producer->produceSyncJob();
-die;

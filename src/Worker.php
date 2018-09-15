@@ -29,7 +29,8 @@ class Worker implements ServerQueue
         });
 
         $this->worker->addFunction(static::SYNC_QUEUE, function (\GearmanJob $job) {
-            return $job->workload();
+            $workload = json_decode($job->workload(), true);
+            return array_sum($workload['numbers']);
         });
     }
 }

@@ -23,9 +23,10 @@ class Client implements ServerQueue
         $this->client->doHighBackground($queue, $workload);
     }
 
-    public function publish(string $queue, string $payload)
+    public function publish(string $queue, string $workload)
     {
-        echo $this->client->doHigh($queue, $payload);
+        echo "\n Workload: " . $workload . "\n";
+        echo "\n ->>Result " . $this->client->doHigh($queue, $workload) . "\n";
     }
 }
 
