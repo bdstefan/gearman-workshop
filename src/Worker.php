@@ -2,18 +2,24 @@
 
 namespace GearmanApp;
 
-class Worker implements ServerQueue
+require __DIR__ . '/../vendor/autoload.php';
+
+class Worker
 {
-    use ServerTrait;
+    /** @var Server */
+    private $server;
 
     /** @var \GearmanWorker */
     private $worker;
 
     public function __construct()
     {
-        $server = $this->getServer();
+        $this->server = new Server();
         $this->worker = new \GearmanWorker();
-        $this->worker->addServer($server['hostname'], $server['port']);
+        $this->worker->addServer(
+            $this->server->getHostname(),
+            $this->server->getPort()
+        );
         $this->registerWorkers();
     }
 
@@ -24,13 +30,22 @@ class Worker implements ServerQueue
 
     private function registerWorkers()
     {
-        $this->worker->addFunction(static::ASYNC_QUEUE, function (\GearmanJob $job) {
-            print_r($job->workload()). "\n";
+        /** Worker for async job queue */
+        $this->worker->addFunction($this->server->getSyncQueue(), function (\GearmanJob $job) {
+            echo "Workload is: " . $job->workload() . PHP_EOL;
+            $workload = json_decode($job->workload(), true);
+            $result   = array_sum($workload['numbers']);
+            echo "*Result is: " . $result . PHP_EOL;
+
+            return $result;
         });
 
-        $this->worker->addFunction(static::SYNC_QUEUE, function (\GearmanJob $job) {
+        /** Worker for sync job queue */
+        $this->worker->addFunction($this->server->getAsyncQueue(), function (\GearmanJob $job) {
             $workload = json_decode($job->workload(), true);
             return array_sum($workload['numbers']);
         });
     }
 }
+
+(new Worker())->execute();
