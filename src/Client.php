@@ -4,7 +4,7 @@ namespace GearmanApp;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-class Client
+final class Client
 {
     /** @var Server */
     private $server;
@@ -27,7 +27,7 @@ class Client
      */
     public function produceAsyncJob()
     {
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < 5; $i++) {
             $this->client->doBackground($this->server->getAsyncQueue(), $this->generateWorkload(3));
         }
     }
@@ -37,8 +37,8 @@ class Client
      */
     public function produceSyncJob()
     {
-        for ($i = 0; $i < 100; $i++) {
-            $result = $this->client->doNormal($this->server->getSyncQueue(), $this->generateWorkload(3));
+        for ($i = 0; $i < 5; $i++) {
+            $result = $this->client->doHigh($this->server->getSyncQueue(), $this->generateWorkload(3));
             echo "*** Result is: " . $result . PHP_EOL;
         }
     }
@@ -62,5 +62,5 @@ class Client
 
 
 $client = new Client();
-//$client->produceAsyncJob();
+$client->produceAsyncJob();
 $client->produceSyncJob();
