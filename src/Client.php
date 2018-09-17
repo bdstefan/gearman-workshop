@@ -2,31 +2,65 @@
 
 namespace GearmanApp;
 
-class Client implements ServerQueue
+require __DIR__ . '/../vendor/autoload.php';
+
+final class Client
 {
-    use ServerTrait;
+    /** @var Server */
+    private $server;
 
     /** @var \GearmanClient */
     private $client;
 
     public function __construct()
     {
-        $server = $this->getServer();
+        $this->server = new Server();
         $this->client = new \GearmanClient();
-        $this->client->addServer($server['hostname'], $server['port']);
+        $this->client->addServer(
+            $this->server->getHostname(),
+            $this->server->getPort()
+        );
     }
 
-    public function publishBackground(string $queue, string $workload)
+    /**
+     * Publish an async job, will publish a job and will NOT wait for an answer
+     */
+    public function produceAsyncJob()
     {
-        $this->client->doBackground($queue, $workload);
-        $this->client->doLowBackground($queue, $workload);
-        $this->client->doHighBackground($queue, $workload);
+        for ($i = 0; $i < 5; $i++) {
+            $this->client->doBackground($this->server->getAsyncQueue(), $this->generateWorkload(3));
+        }
     }
 
-    public function publish(string $queue, string $workload)
+    /**
+     * Publish a sync job execution will wait until will get an answer from consumer
+     */
+    public function produceSyncJob()
     {
-        echo "\n Workload: " . $workload . "\n";
-        echo "\n ->>Result " . $this->client->doHigh($queue, $workload) . "\n";
+        for ($i = 0; $i < 5; $i++) {
+            $result = $this->client->doHigh($this->server->getSyncQueue(), $this->generateWorkload(3));
+            echo "*** Result is: " . $result . PHP_EOL;
+        }
+    }
+
+    private function generateWorkload(int $itemsNumber): string
+    {
+        $workload = json_encode(["numbers" => $this->getValues($itemsNumber)]);
+        echo "Workload is: " . $workload . PHP_EOL;
+
+        return $workload;
+    }
+
+    private function getValues(int $itemsNumber): array
+    {
+        $numbers = range(1, 10);
+        shuffle($numbers);
+
+        return array_slice($numbers, 0, $itemsNumber);
     }
 }
 
+
+$client = new Client();
+$client->produceAsyncJob();
+$client->produceSyncJob();
