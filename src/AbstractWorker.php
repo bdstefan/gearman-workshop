@@ -24,9 +24,9 @@ abstract class AbstractWorker
         $this->registerWorker();
     }
 
-    public function execute()
+    public function execute(): void
     {
-        $this->worker->work();
+        while ($this->worker->work());
     }
 
     abstract protected function registerWorker();
