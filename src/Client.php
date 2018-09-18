@@ -28,7 +28,7 @@ final class Client
     public function produceAsyncJob()
     {
         for ($i = 0; $i < 5; $i++) {
-            $this->client->doBackground($this->server->getAsyncQueue(), $this->generateWorkload(3));
+            echo $this->client->doBackground($this->server->getAsyncQueue(), $this->generateWorkload(3));
         }
     }
 
